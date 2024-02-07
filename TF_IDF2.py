@@ -50,12 +50,10 @@ def get_TF_values(dic_song_term_frequency):
     the keys and their TFs as values
     """
     dic_tf_per_song = {}
-    for song in dic_song_term_frequency:
-        ############################
-        # Put your code here and then remove 'pass'
-        # YOUR CODE
-        ############################
-        pass
+    for song, frequency_dict in dic_song_term_frequency.items():
+        total_terms = sum(frequency_dict.values())
+        tf_per_token = {token: freq / total_terms for token, freq in frequency_dict.items()} # New dictionary with words as keys, TF as values
+        dic_tf_per_song[song] = tf_per_token # Set value to tf_per_token dictionary
 
     return dic_tf_per_song
 
@@ -164,7 +162,7 @@ def main():
     # Path to the root Lyrics files
     path_to_root_dir = r"C:\Users\Gigabyte\Desktop\Genres"
     dic_song_dic_term_count, dic_song_genre = read_files_to_dictionaries(path_to_root_dir + "/")
-    # dic_song_dic_term_frequency = get_TF_values(dic_song_dic_term_count)
+    dic_song_dic_term_frequency = get_TF_values(dic_song_dic_term_count)
     dic_term_idfs = get_IDF_values(dic_song_dic_term_count)
     # dic_song_vectors = song_to_vector(dic_song_dic_term_frequency, dic_term_idfs)
     # test_cosine(dic_song_vectors)
