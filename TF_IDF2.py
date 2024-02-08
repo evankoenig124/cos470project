@@ -38,6 +38,7 @@ def read_files_to_dictionaries(directory_path):
             song_name = file.split(".")[0]
             dic_song_term_frequency[song_name] = temp_dic
             dic_song_genre[song_name] = genre
+
     return dic_song_term_frequency, dic_song_genre
 
 
@@ -86,15 +87,14 @@ def song_to_vector(dic_tf_per_song, dic_idf):
     @param dic_idf: IDF dictionary with token as key and its IDF as value
     @return: dictionary of (song name, vector)
     """
-    song_to_vec = {}
-    for song in dic_tf_per_song:
-        ############################
-        # Put your code here and then remove 'pass'
-        # Sample code to get numpy array from a python list: numpy.array(lst)
-        # Sample code to sort python dictionary based on keys dict(sorted(my_dic.items()))
-        # YOUR CODE
-        ############################
-        pass
+    song_to_vec = {} 
+    for song, tf_dict in dic_tf_per_song.items():
+        tfidf_vector = numpy.zeros(len(dic_idf))
+        for idx, token in enumerate(sorted(dic_idf.keys())):
+            if token in tf_dict:
+                tfidf_vector[idx] = tf_dict[token] * dic_idf[token]
+        song_to_vec[song] = tfidf_vector
+    song_to_vec = dict(sorted(song_to_vec.items()))
     return song_to_vec
 
 
@@ -110,8 +110,7 @@ def cosine_sim(numpy_vec1, numpy_vec2):
 
 def test_cosine(dic_song_vectors):
     print(cosine_sim(dic_song_vectors["Till I Collapse"].reshape(-1, 1), dic_song_vectors["Rap God"].reshape(-1, 1)))
-    print(
-        cosine_sim(dic_song_vectors["Till I Collapse"].reshape(-1, 1), dic_song_vectors["Billie Jean"].reshape(-1, 1)))
+    print(cosine_sim(dic_song_vectors["Till I Collapse"].reshape(-1, 1), dic_song_vectors["Billie Jean"].reshape(-1, 1)))
 
 
 def test_tsne_plot(dic_song_vectors, dic_song_genre):
@@ -160,13 +159,13 @@ def get_color(genre):
 
 def main():
     # Path to the root Lyrics files
-    path_to_root_dir = r"C:\Users\Gigabyte\Desktop\Genres"
+    path_to_root_dir = r"/Users/evankoenig/Downloads/TM_CA1_Lyrics2"
     dic_song_dic_term_count, dic_song_genre = read_files_to_dictionaries(path_to_root_dir + "/")
     dic_song_dic_term_frequency = get_TF_values(dic_song_dic_term_count)
     dic_term_idfs = get_IDF_values(dic_song_dic_term_count)
-    # dic_song_vectors = song_to_vector(dic_song_dic_term_frequency, dic_term_idfs)
-    # test_cosine(dic_song_vectors)
-    # test_tsne_plot(dic_song_vectors, dic_song_genre)
+    dic_song_vectors = song_to_vector(dic_song_dic_term_frequency, dic_term_idfs)
+    test_cosine(dic_song_vectors)
+    test_tsne_plot(dic_song_vectors, dic_song_genre)
 
 
 if __name__ == '__main__':
